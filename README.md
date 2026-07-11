@@ -17,10 +17,10 @@ Mass (m<sub>car</sub>) = 389.55 g, Length (l<sub>car</sub>) = 175 mm, Width (w<s
 *Global Coordinate System*:</strong> <i>X</i><sub>global</sub> = [X, Y, Z] with &theta; about Z <br>
 
 **Dynamic Definitions**<br>
-x represents the linear translation of the car at the pivot
-&theta; represents the rotation of the car relative to the neutral axis (&theta; = 0)
+x represents the linear translation of the car at the pivot<br>
+&theta; represents the rotation of the car relative to the neutral axis (&theta; = 0)<br>
 *State Vector*:</strong> z = [x, ẋ, θ, θ̇]<sup>T</sup><br>
-*Input Parameter*:</strong> u = F<sub>traction</sub>
+*Input Parameter*:</strong> u = F<sub>traction</sub><br>
 
 **Relevant Force**<br>
 *Drag Force*: F<sub>Drag</sub> = v &times; b <br>
