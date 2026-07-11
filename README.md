@@ -22,7 +22,13 @@ The following is a basic step-by-step rationalization for the dynamics of the in
 
 **General Definitions**<br>
 &nbsp; *x (Displacement)* represents the linear translation of the car at the pivot<br>
-&nbsp; *&theta; (Theta)* represents the rotation of the car relative to the neutral axis (&theta; = 0)<br>
+&nbsp; *ẋ (Velocity)* represents the linear velocity of the car at the pivot<br>
+&nbsp; *θ (Altitude)* represents the rotation of the car relative to the neutral axis (&theta; = 0)<br>
+&nbsp; *θ̇ (Theta)* represents the angular velocity of the car relative to the neutral axis (&theta; = 0)<br>
+
+**Initial Conditions (ICs)**<br>
+&nbsp; *Vertical Alignment*: x(0) = 0
+&nbsp; *No Vertical Velocity*: x(0) = 0
 
 **Relevant Force**<br>
 &nbsp; *Drag Force*: F<sub>Drag</sub> = v &times; b <br>
@@ -35,7 +41,11 @@ The following is a basic step-by-step rationalization for the dynamics of the in
 
 ## 2. Nonlinearized ODE System
 
-**General Nonlinear ODE Components**
-&nbsp; *State Vector*:</strong> z = [x, ẋ, θ, θ̇] = [z<sub>1</sub>, z<sub>2</sub>, z<sub>3</sub>, z<sub>4</sub>]<sup>T</sup><br>
+**General Nonlinear ODE Components**<br>
+&nbsp; *State Vector*:</strong> z = [z<sub>1</sub>, z<sub>2</sub>, z<sub>3</sub>, z<sub>4</sub>]<sup>T</sup> = [x, ẋ, θ, θ̇]<br>
 &nbsp; *Input Parameter*:</strong> u = F<sub>Traction</sub><br>
 
+&nbsp; *Linear Displacement*: z<sub>1</sub> = x<br>
+&nbsp; *Linear Velocity*: z<sub>2</sub> = ẋ = <br>
+&nbsp; *Angular Displacement*: z<sub>3</sub> = θ = <br>
+&nbsp; *Angular Velocity*: z<sub>4</sub> = θ̇<br>
