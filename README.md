@@ -9,10 +9,10 @@ The following is a basic step-by-step rationalization for the dynamics of the in
 ## 1. General Background
 
 ### Example Stunt Car Parameters (from Fast Rboots 2026)
-&nbsp; Mass (m<sub>car</sub>) = 389.55 g
-&nbsp; Length (l<sub>car</sub>) = 175 mm
-&nbsp; Width (w<sub>car</sub>) = 140 mm
-&nbsp; Height (h<sub>car</sub>) = 75 mm
+&nbsp; Mass (m<sub>car</sub>) = 389.55 g<br>
+&nbsp; Length (l<sub>car</sub>) = 175 mm<br>
+&nbsp; Width (w<sub>car</sub>) = 140 mm<br>
+&nbsp; Height (h<sub>car</sub>) = 75 mm<br>
 &nbsp; Radius (r<sub>wheel</sub>) = 75 mm<br>
 
 ### Global Definitions
