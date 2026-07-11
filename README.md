@@ -11,11 +11,13 @@ Mass (m) = 389.55 g; Length (l) = 175 mm; Width (w) = 140 mm; Height (h) = 75 mm
 
 ## Free Body Diagram Components
 
-![System Dynamics Model for Stunt Car](images/FBD_Diagram.png)
+Global Coordinates Definition: [X, Y, Z] with &theta; about Z
 
 F<sub>Drag</sub> = v &times; b <br>
 F<sub>Gravity</sub> = m &times; g <br>
-F<sub>Traction</sub> = τ / R <br>
+F<sub>Traction</sub> = &tau; / R <br>
 F<sub>Normal</sub> = - m &times; g <br>
+
+![System Dynamics Model for Stunt Car](images/FBD_Diagram.png)
 
 ## 2. Nonlinearized ODE System
