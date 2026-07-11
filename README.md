@@ -11,7 +11,14 @@ Mass (m) = 389.55 g; Length (l) = 175 mm; Width (w) = 140 mm; Height (h) = 75 mm
 
 ## Free Body Diagram Components
 
-Global Coordinates Definition: [X, Y, Z] with &theta; about Z
+Global Coordinates Definition: [X, Y, Z] with &theta; about Z <br>
+
+<i>X</i><sub>global</sub> =
+<table style="display:inline-table; border-collapse:collapse; margin:0 4px; vertical-align:middle;">
+  <tr><td style="padding:0 8px;">x</td></tr>
+  <tr><td style="padding:0 8px;">y</td></tr>
+  <tr><td style="padding:0 8px;">z</td></tr>
+</table>
 
 F<sub>Drag</sub> = v &times; b <br>
 F<sub>Gravity</sub> = m &times; g <br>
