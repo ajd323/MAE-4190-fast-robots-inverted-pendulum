@@ -13,13 +13,16 @@ Mass (m) = 389.55 g; Length (l) = 175 mm; Width (w) = 140 mm; Height (h) = 75 mm
 
 F<sub>Drag</sub> = v &times; b <br>
 F<sub>Gravity</sub> = m &times; g <br>
-F<sub>Traction</sub> =
 <math>
-  <mfrac>
-    <mi>&tau;</mi>
-    <mi>R</mi>
-  </mfrac>
-</math><br>
+  <mrow>
+    <mi>F<sub>Traction</sub></mi>
+    <mo>=</mo>
+    <mfrac>
+      <mi>m</mi>
+      <mi>τ</mi>
+    </mfrac>
+  </mrow>
+</math>
 
 
 ## 2. Nonlinearized ODE System
