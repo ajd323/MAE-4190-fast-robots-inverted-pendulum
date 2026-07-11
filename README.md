@@ -1,5 +1,7 @@
 # Stunt Car Inverted Pendulum Explicit ODE Formulation
 
+Produced by Andrew J. D'Onofrio (*MechE '26*)
+
 The following is an control system representation of a stunt car operating as an inverted pendulum. This is inspired by the Cornell University's ECE 4160 / MAE 4190 Fast Robots final project, which requires operating a custom stunt car as a PID-controlled inverted pendulum using ToF and 9DOF IMU sensors. This is a modular program for designs of various geometries and mass, which all operate on a similar dynamics process.
 
 The following is a basic step-by-step rationalization for the dynamics of the instable system, including the implicit and explicit ordinary differential equations (ODEs):
@@ -11,20 +13,15 @@ Mass (m) = 389.55 g; Length (l) = 175 mm; Width (w) = 140 mm; Height (h) = 75 mm
 
 ## Free Body Diagram Components
 
-Global Coordinates Definition: [X, Y, Z] with &theta; about Z <br>
+**Global Coordinates Definition**: <i>X</i><sub>global</sub> = [X, Y, Z] with &theta; about Z <br>
 
-<i>X</i><sub>global</sub> =
-<table style="display:inline-table; border-collapse:collapse; margin:0 4px; vertical-align:middle;">
-  <tr><td style="padding:0 8px;">x</td></tr>
-  <tr><td style="padding:0 8px;">y</td></tr>
-  <tr><td style="padding:0 8px;">z</td></tr>
-</table>
-
+**Relevant Force**
 F<sub>Drag</sub> = v &times; b <br>
 F<sub>Gravity</sub> = m &times; g <br>
 F<sub>Traction</sub> = &tau; / R <br>
 F<sub>Normal</sub> = - m &times; g <br>
 
+**Visual Diagram**
 ![System Dynamics Model for Stunt Car](images/FBD_Diagram.png)
 
 ## 2. Nonlinearized ODE System
