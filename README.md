@@ -77,7 +77,6 @@ The following is a basic step-by-step rationalization for the dynamics of the un
 ## 3. Linearized State-Space Model
 
 &nbsp; *Equilibrium Point*: z<sub>eq</sub> = [0, 0, 0, 0]<sup>T</sup>, u<sub>eq</sub> = 0 &nbsp;(upright, at rest, no input)<br>
-&nbsp; *Linearization Method*: first-order Taylor expansion of ż = f(z,u) about the equilibrium, via the Jacobians A = &part;f/&part;z |<sub>eq</sub> and B = &part;f/&part;u |<sub>eq</sub><br>
 
 **Linear State-Space Form**<br>
 &nbsp; **ż** = A**z** + B**u**<br>
