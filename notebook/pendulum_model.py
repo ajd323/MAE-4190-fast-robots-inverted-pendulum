@@ -49,3 +49,4 @@ def simulate(params, z0, t_final, dt, u_fn):
         max_step=dt,
     )
     return sol
+# why/
