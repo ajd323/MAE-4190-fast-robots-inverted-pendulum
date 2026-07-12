@@ -10,7 +10,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 
 # Imports from mathmetical part of pendulum model
-from pendulum_model import DEFAULT_PARAMS, simulate
+from pendulum_model import DEFAULT_PARAMS, simulate, simulate_closed_loop, PID
 
 # User Interface Parameters
 FIELD_GROUPS = [
@@ -32,30 +32,40 @@ FIELD_GROUPS = [
         ("t_final", "Duration [s]", 3.0),
         ("dt", "Time step [s]", 0.002),
     ]),
+    ("PID Controller (used only when Closed-loop is checked)", [
+        ("kp", "Kp [N/rad]", 20.0),
+        ("ki", "Ki [N/(rad*s)]", 1.0),
+        ("kd", "Kd [N*s/rad]", 3.0),
+        ("setpoint", "Setpoint, theta_target [deg]", 0.0),
+        ("u_limit", "Traction limit [N]", 2.0),
+    ]),
 ]
 
 class PendulumApp(tk.Tk):
     # Window Initialization
     def __init__(self):
         super().__init__()
-        self.title("Stunt Car Inverted Pendulum (Open-Loop Simulator)")
+        self.title("Stunt Car Inverted Pendulum -- Open-Loop Simulator")
         self.geometry("1100x750")
 
         self.entries = {}
         self.last_sol = None
+        self.closed_loop_var = tk.BooleanVar(value=False)
+        self._pid = None
         self._build_layout()
         self.run_simulation()
 
     def _build_layout(self):
-        # Input Parameters on Left Side of Window
         controls = ttk.Frame(self, padding=10)
         controls.pack(side=tk.LEFT, fill=tk.Y)
+
         row = 0
         for section_title, fields in FIELD_GROUPS:
             ttk.Label(controls, text=section_title, font=("", 11, "bold")).grid(
                 row=row, column=0, columnspan=2, pady=(10 if row else 0, 8), sticky="w"
             )
             row += 1
+
             for key, label, default in fields:
                 ttk.Label(controls, text=label).grid(row=row, column=0, sticky="w", pady=2)
                 var = tk.StringVar(value=str(default))
@@ -63,9 +73,14 @@ class PendulumApp(tk.Tk):
                 entry.grid(row=row, column=1, pady=2, padx=(6, 0))
                 self.entries[key] = var
                 row += 1
-        # Relevant Buttons for Simulation and Saving Plots
+
+        ttk.Checkbutton(
+            controls, text="Closed-loop (PID)", variable=self.closed_loop_var
+        ).grid(row=row, column=0, columnspan=2, sticky="w", pady=(10, 4))
+        row += 1
+
         ttk.Button(controls, text="Simulate", command=self.run_simulation).grid(
-            row=row, column=0, columnspan=2, sticky="ew", pady=(12, 4)
+            row=row, column=0, columnspan=2, sticky="ew", pady=(4, 4)
         )
         row += 1
         ttk.Button(controls, text="Save Plot...", command=self.save_plot).grid(
@@ -73,21 +88,21 @@ class PendulumApp(tk.Tk):
         )
         row += 1
 
-        # Input Parameters on Left Side of Window
         self.status = ttk.Label(controls, text="", wraplength=200, foreground="#555")
         self.status.grid(row=row, column=0, columnspan=2, pady=(12, 0), sticky="w")
+
         plot_frame = ttk.Frame(self)
         plot_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+
         self.fig = Figure(figsize=(8, 6), dpi=100, constrained_layout=True)
         self.axes = self.fig.subplots(2, 2)
+
         self.canvas = FigureCanvasTkAgg(self.fig, master=plot_frame)
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
         toolbar = NavigationToolbar2Tk(self.canvas, plot_frame)
-
         toolbar.update()
 
     def run_simulation(self):
-        # Read Input Parameters and Validate
         try:
             v = {key: float(self.entries[key].get()) for key in self.entries}
         except ValueError:
@@ -102,63 +117,75 @@ class PendulumApp(tk.Tk):
             "g": v["gravity"],
         }
         z0 = [v["x0"], v["xdot0"], np.radians(v["theta0"]), np.radians(v["thetadot0"])]
-        u_fn = lambda t: v["u"]
 
-        solution = simulate(params, z0, v["t_final"], v["dt"], u_fn)
-        if not solution.success:
-            messagebox.showerror("Integration failed", solution.message)
+        closed_loop = self.closed_loop_var.get()
+        if closed_loop:
+            self._pid = PID(
+                kp=v["kp"], ki=v["ki"], kd=v["kd"],
+                setpoint=np.radians(v["setpoint"]), u_limit=v["u_limit"],
+            )
+            sol = simulate_closed_loop(params, z0, v["t_final"], v["dt"], self._pid)
+        else:
+            u_fn = lambda t: v["u"]
+            sol = simulate(params, z0, v["t_final"], v["dt"], u_fn)
+
+        if not sol.success:
+            messagebox.showerror("Integration failed", sol.message)
             return
 
-        self.last_sol = solution
-        self._draw(solution)
+        self.last_sol = sol
+        self._draw(sol, closed_loop)
 
-        theta_deg = np.degrees(solution.y[2])
+        theta_deg = np.degrees(sol.y[2])
         status_text = f"Final θ: {theta_deg[-1]:.2f}°\nPeak |θ|: {np.max(np.abs(theta_deg)):.2f}°"
-        if solution.fell_at is not None:
-            status_text = f"FELL at t = {solution.fell_at:.3f}s\n" + status_text
+        if closed_loop:
+            status_text += f"\nPeak |u|: {np.max(np.abs(sol.u)):.3f} N"
+        if sol.fell_at is not None:
+            status_text = f"FELL at t = {sol.fell_at:.3f}s\n" + status_text
         self.status.config(text=status_text)
 
-    def _draw(self, solution):
-        t = solution.t
-        x, x_dot, theta, theta_dot = solution.y
+    def _draw(self, sol, closed_loop):
+        t = sol.t
+        x, x_dot, theta, theta_dot = sol.y
         theta_deg = np.degrees(theta)
         theta_dot_deg = np.degrees(theta_dot)
 
         for ax in self.axes.flat:
             ax.clear()
 
-        # Position Graph
+        self.fig.suptitle("Closed-loop (PID) Response" if closed_loop else "Open-loop Response")
+
         self.axes[0, 0].plot(t, x * 1000, color="#1A2033")
         self.axes[0, 0].set_title("Position, x(t)")
         self.axes[0, 0].set_ylabel("x (mm)")
         self.axes[0, 0].grid(alpha=0.3)
-        # Velocity Graph
+
         self.axes[0, 1].plot(t, x_dot * 1000, color="#5A5F6E")
         self.axes[0, 1].set_title("Velocity, ẋ(t)")
         self.axes[0, 1].set_ylabel("ẋ (mm/s)")
         self.axes[0, 1].grid(alpha=0.3)
-        # Angular Graph
+
         self.axes[1, 0].plot(t, theta_deg, color="#C0402A")
         self.axes[1, 0].axhline(0, color="black", linewidth=0.6)
         self.axes[1, 0].set_title("Angle, θ(t)")
         self.axes[1, 0].set_ylabel("θ (deg)")
         self.axes[1, 0].set_xlabel("time (s)")
         self.axes[1, 0].grid(alpha=0.3)
-        # Angular Velocity Graph
+
         self.axes[1, 1].plot(t, theta_dot_deg, color="#D85A30")
         self.axes[1, 1].set_title("Angular velocity, θ̇(t)")
         self.axes[1, 1].set_ylabel("θ̇ (deg/s)")
         self.axes[1, 1].set_xlabel("time (s)")
         self.axes[1, 1].grid(alpha=0.3)
 
-        # Fall Detection and Annotation
-        if solution.fell_at is not None:
+        if sol.fell_at is not None:
             for ax in self.axes.flat:
-                ax.axvline(solution.fell_at, color="black", linewidth=1, linestyle="--", alpha=0.6)
+                ax.axvline(sol.fell_at, color="black", linewidth=1, linestyle="--", alpha=0.6)
             self.axes[0, 0].annotate(
-                "fell", xy=(solution.fell_at, self.axes[0, 0].get_ylim()[1]),
+                "fell", xy=(sol.fell_at, self.axes[0, 0].get_ylim()[1]),
                 xytext=(3, -12), textcoords="offset points", fontsize=8, color="#555",
             )
+
         self.canvas.draw()
 
     def save_plot(self):
@@ -177,6 +204,7 @@ class PendulumApp(tk.Tk):
 
         self.fig.savefig(path, dpi=150)
         self.status.config(text=f"Saved to:\n{path}")
+
 
 if __name__ == "__main__":
     app = PendulumApp()
