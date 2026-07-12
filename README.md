@@ -80,5 +80,18 @@ The following is a basic step-by-step rationalization for the dynamics of the un
 &nbsp; *Linearization Method*: first-order Taylor expansion of ż = f(z,u) about the equilibrium, via the Jacobians A = &part;f/&part;z |<sub>eq</sub> and B = &part;f/&part;u |<sub>eq</sub><br>
 
 **Linear State-Space Form**<br>
-&nbsp; ż = Az + Bu<br>
+&nbsp; **ż** = A**z** + B**u**<br>
 
+<pre>
+A =
+[ 0     1               0              0 ]
+[ 0   -b/m_car     -3gl²/(l²+w²)       0 ]
+[ 0     0               0              1 ]
+[ 0     0          6gl/(l²+w²)         0 ]
+
+B =
+[            0              ]
+[ (4l² + w²)/(m_car(l² + w²)) ]
+[            0              ]
+[  -6l/(m_car(l² + w²))     ]
+</pre>
