@@ -19,7 +19,6 @@ FIELD_GROUPS = [
         ("length", "Length [m]", DEFAULT_PARAMS["l"]),
         ("width", "Width [m]", DEFAULT_PARAMS["w"]),
         ("damping", "Drag Coefficient [N*s^2/m^2]", DEFAULT_PARAMS["Cd"]),
-        ("gravity", "Gravity [m/s^2]", DEFAULT_PARAMS["g"]),
     ]),
     ("Initial Conditions", [
         ("x0", "Initial Position [m]", 0.0),
@@ -28,18 +27,26 @@ FIELD_GROUPS = [
         ("thetadot0", "Initial Angular Velocity [deg/s]", 0.0),
     ]),
     ("Simulation Settings", [
-        ("u", "Traction Force, u [N] (Open-Loop Control)", 0.0),
         ("t_final", "Duration [s]", 3.0),
         ("dt", "Time step [s]", 0.002),
     ]),
-    ("PID Controller (used only when Closed-loop is checked)", [
+    ("Open-Loop Controller", [
+        ("u", "Traction Force, u [N] (Open-Loop Control)", 0.0),
+    ]),
+    ("Closed-Loop Controller", [
         ("kp", "Kp [N/rad]", 20.0),
         ("ki", "Ki [N/(rad*s)]", 1.0),
         ("kd", "Kd [N*s/rad]", 3.0),
-        ("setpoint", "Setpoint, theta_target [deg]", 0.0),
-        ("u_limit", "Traction limit [N]", 2.0),
     ]),
 ]
+
+# Held fixed rather than exposed as editable fields -- gravity is a physical
+# constant (not something you'd realistically vary per run), and setpoint/
+# u_limit are given sensible defaults here since they were trimmed from the
+# PID field group above.
+FIXED_GRAVITY = DEFAULT_PARAMS["g"]
+FIXED_SETPOINT_DEG = 0.0
+FIXED_U_LIMIT = 2.0
 
 class PendulumApp(tk.Tk):
     # Window Initialization
@@ -50,7 +57,7 @@ class PendulumApp(tk.Tk):
 
         self.entries = {}
         self.last_sol = None
-        self.closed_loop_var = tk.BooleanVar(value=False)
+        self.mode_var = tk.StringVar(value="uncontrolled")
         self._pid = None
         self._build_layout()
         self.run_simulation()
@@ -74,9 +81,21 @@ class PendulumApp(tk.Tk):
                 self.entries[key] = var
                 row += 1
 
-        ttk.Checkbutton(
-            controls, text="Closed-loop (PID)", variable=self.closed_loop_var
-        ).grid(row=row, column=0, columnspan=2, sticky="w", pady=(10, 4))
+        ttk.Label(controls, text="Simulation Mode", font=("", 11, "bold")).grid(
+            row=row, column=0, columnspan=2, pady=(10, 2), sticky="w"
+        )
+        row += 1
+        ttk.Radiobutton(
+            controls, text="Uncontrolled (u = 0)", variable=self.mode_var, value="uncontrolled"
+        ).grid(row=row, column=0, columnspan=2, sticky="w", pady=1)
+        row += 1
+        ttk.Radiobutton(
+            controls, text="Open-Loop (constant u)", variable=self.mode_var, value="open_loop"
+        ).grid(row=row, column=0, columnspan=2, sticky="w", pady=1)
+        row += 1
+        ttk.Radiobutton(
+            controls, text="Closed-Loop (PID)", variable=self.mode_var, value="closed_loop"
+        ).grid(row=row, column=0, columnspan=2, sticky="w", pady=(1, 4))
         row += 1
 
         ttk.Button(controls, text="Simulate", command=self.run_simulation).grid(
@@ -114,19 +133,22 @@ class PendulumApp(tk.Tk):
             "l": v["length"],
             "w": v["width"],
             "Cd": v["damping"],
-            "g": v["gravity"],
+            "g": FIXED_GRAVITY,
         }
         z0 = [v["x0"], v["xdot0"], np.radians(v["theta0"]), np.radians(v["thetadot0"])]
 
-        closed_loop = self.closed_loop_var.get()
-        if closed_loop:
+        mode = self.mode_var.get()
+        if mode == "closed_loop":
             self._pid = PID(
                 kp=v["kp"], ki=v["ki"], kd=v["kd"],
-                setpoint=np.radians(v["setpoint"]), u_limit=v["u_limit"],
+                setpoint=np.radians(FIXED_SETPOINT_DEG), u_limit=FIXED_U_LIMIT,
             )
             sol = simulate_closed_loop(params, z0, v["t_final"], v["dt"], self._pid)
-        else:
+        elif mode == "open_loop":
             u_fn = lambda t: v["u"]
+            sol = simulate(params, z0, v["t_final"], v["dt"], u_fn)
+        else:  # uncontrolled
+            u_fn = lambda t: 0.0
             sol = simulate(params, z0, v["t_final"], v["dt"], u_fn)
 
         if not sol.success:
@@ -134,17 +156,17 @@ class PendulumApp(tk.Tk):
             return
 
         self.last_sol = sol
-        self._draw(sol, closed_loop)
+        self._draw(sol, mode)
 
         theta_deg = np.degrees(sol.y[2])
         status_text = f"Final θ: {theta_deg[-1]:.2f}°\nPeak |θ|: {np.max(np.abs(theta_deg)):.2f}°"
-        if closed_loop:
+        if mode == "closed_loop":
             status_text += f"\nPeak |u|: {np.max(np.abs(sol.u)):.3f} N"
         if sol.fell_at is not None:
             status_text = f"FELL at t = {sol.fell_at:.3f}s\n" + status_text
         self.status.config(text=status_text)
 
-    def _draw(self, sol, closed_loop):
+    def _draw(self, sol, mode):
         t = sol.t
         x, x_dot, theta, theta_dot = sol.y
         theta_deg = np.degrees(theta)
@@ -153,7 +175,12 @@ class PendulumApp(tk.Tk):
         for ax in self.axes.flat:
             ax.clear()
 
-        self.fig.suptitle("Closed-loop (PID) Response" if closed_loop else "Open-loop Response")
+        titles = {
+            "uncontrolled": "Uncontrolled Response (u = 0)",
+            "open_loop": "Open-Loop Response (constant u)",
+            "closed_loop": "Closed-Loop (PID) Response",
+        }
+        self.fig.suptitle(titles[mode])
 
         self.axes[0, 0].plot(t, x * 1000, color="#1A2033")
         self.axes[0, 0].set_title("Position, x(t)")
