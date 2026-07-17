@@ -17,10 +17,10 @@ stunt-car-inverted-pendulum/<br>
 ├── laplace_analysis.py     # Laplace transform and s-plane analysis<br>
 └── pendulum_gui.py         # Simulation UI and visualization<br>
 
-**1. Clone the repository to Laptop IDE**: The script is not accessible through the GitHub Codespace. Recommend to use Visual Studio Code to manage virtual environment and files.
-**2. Create and Activate Python Virtual Environment**: In the IDE, create a virtual python envionrment to load the requirements from "requirements.txt" file.
-**3. Run "pendulum_gui.py"**: Execute with "python3" to launch the TKinter UI (*Note: May require a couple of minutes to load*)
-**4. Add parameters and Choose Model Type**: This incudes stunt car geoemetry, initial conditions, simulation settings, and simulation mode (uncontrolled, open-loop, and closed-loop) (*Note the recommended PID controls provided*)
+**1. Clone the repository to Laptop IDE**: The script is not accessible through the GitHub Codespace. Recommend to use Visual Studio Code to manage virtual environment and files.<br>
+**2. Create and Activate Python Virtual Environment**: In the IDE, create a virtual python envionrment to load the requirements from "requirements.txt" file.<br>
+**3. Run "pendulum_gui.py"**: Execute with "python3" to launch the TKinter UI (*Note: May require a couple of minutes to load*)<br>
+**4. Add parameters and Choose Model Type**: This incudes stunt car geoemetry, initial conditions, simulation settings, and simulation mode (uncontrolled, open-loop, and closed-loop) (*Note the recommended PID controls provided*)<br>
 
 # Background for `Pendulum_Model.py`
  
