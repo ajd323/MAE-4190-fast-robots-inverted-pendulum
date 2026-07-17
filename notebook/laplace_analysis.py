@@ -46,9 +46,6 @@ def plot_pole_zero(kp, ki, kd, params=DEFAULT_PARAMS, title_suffix=""):
 
     # Shade the stable (left-half-plane) region
     xlim = max(2.0, np.max(np.abs(np.concatenate([ol_poles.real, cl_poles.real]))) * 1.3)
-    # Give the y-range a floor proportional to xlim so pole sets that are
-    # mostly/entirely real-valued don't collapse into an unreadable sliver
-    # (this is what "equal aspect" used to do when imag parts were near 0).
     ylim = max(np.max(np.abs(np.concatenate([ol_poles.imag, cl_poles.imag]))) * 1.3 + 1, xlim * 0.5)
     ax.axvspan(-xlim, 0, color="#1A6B3C", alpha=0.05)
 
