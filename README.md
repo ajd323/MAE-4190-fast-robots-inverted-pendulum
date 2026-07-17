@@ -7,7 +7,21 @@ The following is a control system representation of a stunt car operating as an 
 The following is a basic step-by-step rationalization for the dynamics of the unstable system, including the implicit and explicit ordinary differential equations (ODEs).
  
 ---
- 
+
+# File Structure and Set-Up Guide
+
+stunt-car-inverted-pendulum/
+├── requirements.txt        # Installs required for operating UI
+├── pendulum_model.py       # Physics/simulation backend (ODEs, PID class, solvers)
+├── pid_tuner.py            # Analytical pole-placement PID gain solver
+├── laplace_analysis.py     # Laplace transform and s-plane analysis
+└── pendulum_gui.py         # Simulation UI and visualization
+
+**1. Clone the repository to Laptop IDE**: The script is not accessible through the GitHub Codespace. Recommend to use Visual Studio Code to manage virtual environment and files.
+**2. Create and Activate Python Virtual Environment**: In the IDE, create a virtual python envionrment to load the requirements from "requirements.txt" file.
+**3. Run "pendulum_gui.py"**: Execute with "python3" to launch the TKinter UI (*Note: May require a couple of minutes to load*)
+**4. Add parameters and Choose Model Type**: This incudes stunt car geoemetry, initial conditions, simulation settings, and simulation mode (uncontrolled, open-loop, and closed-loop) (*Note the recommended PID controls provided*)
+
 # Background for `Pendulum_Model.py`
  
 ## 1. General Background
@@ -121,23 +135,20 @@ B =
  
 # Background for `Pendulum_Tuner.py`
  
-## 1. Laplace Transform for Poles (from Linearized Model)
+## 1. Laplace Transform (from Linearized Model)
  
-*With small angle approximation:* θ̈ = A0 − Bu
- 
+*With small angle approximation for general inverted-pendulum:* θ̈ = A0 − Bu
+
+*Non-Trvial Solution*
 1. θ̈ − Aθ = −Bu
 2. L{θ̈} − L{Aθ} = −{Bu}
 3. s²{θ̈(s)} − A{θ(s)} = −B{U(s)}
 4. θ(s) = −B{U(s)} / s²{θ̈(s)} − A{θ(s)} *(assume zero initial conditions)*
-5. G(s) = θ(s) / U(s) = −B / (s² − A)
-6. *Poles:* s² − A = 0, s<sub>Poles</sub> = p<sub>1,2</sub> = ±√A
-## 2. Poles of Response Dynamics
- 
-**Closed-Loop Characteristic Equation:** K<sub>p</sub> + K<sub>i</sub> / s + K<sub>d</sub> / s
- 
-U(s) = C(s)·θ(s) = s³ + B·K<sub>d</sub>·s² + (B·K<sub>p</sub> − A)·s + B·K<sub>i</sub> = 0
- 
-## 3. S-Plane Plotting for Optimizing Dynamic Response
+5. θ(s)(s² − A) = −B·C(s)·θ(s)
+6. s² − A + B·C(s) = 0 *where C(s) = K<sub>p</sub> + K<sub>i</sub> / s + K<sub>d</sub> / s based on the General Closed-Loop Characteristic Equation*
+7. s³ + B·K<sub>d</sub>·s² + (B·K<sub>p</sub> − A)·s + B·K<sub>i</sub> = 0
+  
+## 2. S-Plane Plotting for Optimizing Dynamic Response
  
 *Input selected K<sub>p</sub>, K<sub>i</sub>, K<sub>d</sub> into closed-loop characteristic equation, and solve for the s-poles and express in the standard form:*
  
@@ -146,6 +157,7 @@ U(s) = C(s)·θ(s) = s³ + B·K<sub>d</sub>·s² + (B·K<sub>p</sub> − A)·s +
 3. Determine ωₙ and ζ with the standard form s² + 2ζωₙ·s + ωₙ² = 0
 4. Solve for σ (Decay Rate, −ζωₙ) and ω (Oscillation Frequency, ωₙ√(1−ζ²))
 5. Plot on s-plane with s = σ ± jω
+
 **Visual Diagram 1**
  
 ![S-Plane Diagram](images/S_Plane.png)
@@ -153,8 +165,3 @@ U(s) = C(s)·θ(s) = s³ + B·K<sub>d</sub>·s² + (B·K<sub>p</sub> − A)·s +
 **Visual Diagram 2**
  
 ![Response Diagram](images/Response.png)
-
-# Background for "Pendulum_GUI.py"
-
-**1. Clone the repository to Laptop IDE**
-&nbsp; The script is not accessible through the GitHub Codespace. Recommend to use Visual Studio Code to manage virtual environment and files.
