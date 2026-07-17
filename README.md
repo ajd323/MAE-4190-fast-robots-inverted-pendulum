@@ -115,21 +115,20 @@ B =
 &nbsp; s²{θ̈(s)} - A{θ(s)} = - B{U(s)}<br>
 &nbsp; θ(s) = - B{U(s)} / s²{θ̈(s)} - A{θ(s)}<br> (*assume zero initial conditions*)
 &nbsp; G(s) = θ(s) / U(s) = - B / (s² - A)<br>
-&nbsp; *Poles:* s² - A = 0
-&nbsp; p<sub>1,2</sub> = ±√A<br>
+&nbsp; *Poles:* s² - A = 0, s<sub>Poles</sub> = p<sub>1,2</sub> = ±√A<br>
 
 ## 2. Poles of Response Dynamics
 
 **Closed-Loop Characteristic Equation:** K<sub>p</sub> + K<sub>i</sub> / s + K<sub>d</sub> / s<br>
-&nbsp; U(s) = C(s)·θ(s) = s³ + B·kd·s² + (B·kp − A)·s + B·ki = 0<br>
-&nbsp; U(s) = *Assume triple real root at s = -p*: (s + p)³ = s³ + 3p·s² + 3p²·s + p³<br>
-&nbsp;&nbsp; K<sub>p</sub> = 3p / B<br>
-&nbsp;&nbsp; K<sub>i</sub> = (3p² + A) / B<br>
-&nbsp;&nbsp; K<sub>d</sub> = p³ / B<br>
+&nbsp; U(s) = C(s)·θ(s) = s³ + B·K<sub>d</sub>·s² + (B·K<sub>p</sub> − A)·s + B·K<sub>i</sub> = 0<br>
 
 ## 3. S-Plane Plotting for Optimizing Dynamic Response
-&nbsp; *Natural frequency:* ω<sub>n</sub> = |s| = √(σ² + ω²) &nbsp;(distance from the origin)<br>
-&nbsp; *Damping ratio:* ζ = −σ / ω<sub>n</sub><br>
+&nbsp; *Input selected K<sub>p</sub>, K<sub>i</sub>, K<sub>d</sub> into closed-loop characteristic equation, and solve for the s-poles and express in the standard form* <br>
+&nbsp;&nbsp; Plug PID-values into *s³ + B·K<sub>d</sub>·s² + (B·K<sub>p</sub> − A)·s + B·K<sub>i</sub> = 0* (Closed-Loop Characteristic Equation)
+&nbsp;&nbsp; Turn Cubic Equation (s³) to Quadratic Equation (s²)
+&nbsp;&nbsp; Determine ωₙ and ζ with the standard form *s² + 2ζωₙ·s + ωₙ² = 0*
+&nbsp;&nbsp; Solve for σ (Decay Rate, −ζωₙ) and ω (Oscillation Frequency, ωₙ√(1−ζ²))
+&nbsp;&nbsp; Plot on s-plane with s = σ ± jω
 
 **Visual Diagram 1**<br>
 &nbsp; ![System Dynamics Model for Stunt Car](images/S_Plane.png)
