@@ -38,6 +38,7 @@ The following is a basic step-by-step rationalization for the dynamics of the un
 - *No Horizontal Velocity*: ẋ(0) = 0 mm/s
 - *Pre-Set Angular Displacement*: θ(0) = 0.5°
 - *No Angular Velocity*: θ̇(0) = 0°/s<br>
+
 **Relevant Forces** <br>
 - *Drag Force*: F<sub>Drag</sub> = (1/2)·ρ·C<sub>D</sub>·A·ẋ
 - *Gravitational Force*: F<sub>Gravity</sub> = m·g
