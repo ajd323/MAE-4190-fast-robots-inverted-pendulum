@@ -131,8 +131,8 @@ B =
 &nbsp; *Natural frequency:* ω<sub>n</sub> = |s| = √(σ² + ω²) &nbsp;(distance from the origin)<br>
 &nbsp; *Damping ratio:* ζ = −σ / ω<sub>n</sub><br>
 
-**Visual Diagram (1)**<br>
+**Visual Diagram 1**<br>
 &nbsp; ![System Dynamics Model for Stunt Car](images/S_Plane.png)
 
-**Visual Diagram (2)**<br>
+**Visual Diagram 2**<br>
 &nbsp; ![System Dynamics Model for Stunt Car](images/Response.png)
