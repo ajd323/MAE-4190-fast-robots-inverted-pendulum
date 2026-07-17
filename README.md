@@ -107,19 +107,25 @@ B =
 
 # Background for "Pendulum_Tuner.py"
 
-## 1. LaPlace Transform (from Linearized Model)
+## 1. LaPlace Transform for Poles (from Linearized Model)
 
 **With small angle approximation:** θ̈ = A0 - Bu<br>
-&nbsp; θ̈ - A0 = - Bu<br>
-&nbsp; L{θ̈} - L {A0} = - {Bu}<br>
-&nbsp; s²{θ̈(s)} - A{0(s)} = - B{U(s)}<br>
-&nbsp; G(s) = 0(s) / U(s) = - B{U(s)} / s²{θ̈(s)} - A{0(s)}<br>
-&nbsp; p<sub>1,2</sub> = ±rad(A)<br>
+&nbsp; θ̈ - Aθ = - Bu<br>
+&nbsp; L{θ̈} - L {Aθ} = - {Bu}<br>
+&nbsp; s²{θ̈(s)} - A{θ(s)} = - B{U(s)}<br>
+&nbsp; θ(s) = - B{U(s)} / s²{θ̈(s)} - A{θ(s)}<br> (*assume zero initial conditions*)
+&nbsp; G(s) = θ(s) / U(s) = - B / (s² - A)<br>
+&nbsp; *Poles:* s² - A = 0
+&nbsp; p<sub>1,2</sub> = ±√A<br>
+
 
 ## 2. Poles of Response Dynamics
 
 **Closed-Loop Characteristic Equation:** K<sub>p</sub> + K<sub>i</sub> / s + K<sub>d</sub> / s<br>
-&nbsp; U(s) = C(s)·0(s) = <br>
-&nbsp; s³ + B·kd·s² + (B·kp − A)·s + B·ki = 0<br>
+&nbsp; U(s) = C(s)·θ(s) = s³ + B·kd·s² + (B·kp − A)·s + B·ki = 0<br>
+&nbsp; U(s) = **Assume root as *p*:** (s + p)³ = s³ + 3p·s² + 3p²·s + p³ <br>
+&nbsp; K<sub>p</sub> = 3p / B
+&nbsp; K<sub>i</sub> = (3p² + A) / B
+&nbsp; K<sub>d</sub> = p³ / B
 
 ## 3. Critical Dampening Ratio
